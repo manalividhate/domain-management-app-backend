@@ -45,5 +45,9 @@ public class DomainService {
         List<Domain> domains = domainRepository.findAll();
         return domains;
     }
+    public String checkAvailability(){
+
+        return null;
+    }
 }
 

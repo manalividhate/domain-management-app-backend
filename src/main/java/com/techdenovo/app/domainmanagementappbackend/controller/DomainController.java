@@ -1,18 +1,25 @@
 package com.techdenovo.app.domainmanagementappbackend.controller;
+import com.techdenovo.app.domainmanagementappbackend.dto.DomainDto;
 import com.techdenovo.app.domainmanagementappbackend.model.Customer;
 import com.techdenovo.app.domainmanagementappbackend.model.Domain;
 import com.techdenovo.app.domainmanagementappbackend.service.DomainService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-@CrossOrigin()
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/domain")
 public class DomainController {
+    @Value("${api.key}")
+    private String apiKey;
     @Autowired
     DomainService domainService;
+    @Autowired
+    RestTemplate restTemplate;
     @PostMapping("/add")
     public Domain addDomain(@RequestBody Domain domain) {
         if (domain != null)
@@ -45,4 +52,26 @@ public class DomainController {
         List<Domain> domains =domainService.getDomains();
         return domains;
     }
+
+    @PostMapping("/availability")
+    public DomainDto checkAvailability( @RequestBody DomainDto domainDto){
+        System.out.println(apiKey);
+        DomainDto domain= restTemplate.getForObject(
+            "https://test.httpapi.com/api/domains/available.json?auth-userid=510633&?api_key="+apiKey +"?domain-name="+domainDto.getDomainName()+"?tlds="+domainDto.getTlds(),DomainDto.class);
+        System.out.println(domain);
+        return  domain;
+
+    }
+
+//    @PostMapping("/availability")
+//    public Domain checkAvailability(@RequestBody Domain domain) {
+//        if (domain != null){
+//            domainService.checkAvailability();
+//        System.out.println("available");
+//    }
+//        else{
+//            System.out.println("not available");
+//        }
+//        return domain;
+//    }
 }
